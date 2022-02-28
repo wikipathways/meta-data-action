@@ -91,16 +91,17 @@ public class MetaDataExtractor {
 	private static void printPathwayInfo(String pId, String authors, String date, Pathway pwy) throws IOException {
 		File file = new File(folder, pId + ".info");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		w.write("ID: " + pId + "\n");
-		w.write("Authors: " + authors + "\n");
-		w.write("Date: " + date + "\n");
-		w.write("Species: " + pwy.getMappInfo().getOrganism()  + "\n");
+		w.write("wpid: " + pId + "\n");
+		w.write("title: " + pwy.getMappInfo().getTitle()  + "\n");
+		w.write("authors: " + authors + "\n");
+		w.write("last-edited: " + date + "\n");
+		w.write("organisms: " + pwy.getMappInfo().getOrganism()  + "\n");
 		String ontTag = "";
 		for(OntologyTag t : pwy.getOntologyTags()) {
 			ontTag = ontTag + t.getId() + ", ";
 		}
 		if(ontTag.length() > 2) ontTag = ontTag.substring(0, ontTag.length()-2);
-		w.write("Ontology tags: " + ontTag + "\n");
+		w.write("ontology-ids: " + ontTag + "\n");
 		String desc = "";
 		for(Comment c : pwy.getMappInfo().getComments()) {
 			if(c.getSource() != null) {
@@ -109,7 +110,7 @@ public class MetaDataExtractor {
 				}
 			}
 		}
-		w.write("Description: " + desc.replace("\n", " "));
+		w.write("description: " + desc.replace("\n", " "));
 		w.close();
 	}
 	
