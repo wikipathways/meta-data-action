@@ -92,7 +92,7 @@ public class MetaDataExtractor {
 		File file = new File(folder, pId + ".info");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
 		w.write("wpid: " + pId + "\n");
-		w.write("title: " + pwy.getMappInfo().getTitle()  + "\n");
+		w.write("title: " + pwy.getMappInfo().getMapInfoName()  + "\n");
 		w.write("authors: " + authors + "\n");
 		w.write("last-edited: " + date + "\n");
 		w.write("organisms: " + pwy.getMappInfo().getOrganism()  + "\n");
