@@ -19,22 +19,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHRef;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHTree;
-import org.kohsuke.github.GHTreeBuilder;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
 import org.pathvisio.core.biopax.PublicationXref;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.ObjectType;
@@ -52,7 +42,6 @@ import org.pathvisio.core.model.PathwayElement.Comment;
  */
 public class MetaDataExtractor {
 
-	private static String authentication;
 	private static String repo;
 	private static String file;
 	private static String date;
@@ -61,47 +50,39 @@ public class MetaDataExtractor {
 	/**
 	 * 
 	 * @param args
-	 * arg1 = authentication key provided by the GitHub Action
-	 * arg2 = repo
-	 * arg3 = file
-	 * arg4 = commitDate (change in GPML)
+	 * arg1 = repo
+	 * arg2 = file
+	 * arg3 = commitDate (change in GPML)
 	 */
 	public static void main(String[] args) {
-		if(args.length == 4) {
-			File localDir = new File("dir");
-			localDir.mkdir();
-			authentication = args[0];
-			repo = args[1];
-			file = args[2];
-			date = args[3];
+		if(args.length == 3) {
+			File localDir = new File("pathways");
+			repo = args[0];
+			file = args[1];
+			date = args[2];
 			
 			try {
 				if(file.endsWith(".gpml")) {
-					GitHub github = new GitHubBuilder().withOAuthToken(authentication).build();
-					System.out.println(repo);
-					GHRepository ghRepo = github.getRepository(repo);
 					URL url = new URL("https://raw.githubusercontent.com/" + repo + "/main/" + file);
 					String [] buffer = file.split("/");
-					folder = localDir;
 					String id = "";
 					for(String s : buffer) {
 						if(!s.endsWith(".gpml")) {
-							File f = new File(folder, s);
-							f.mkdir();
+							File f = new File(localDir, s);
 							folder = f;
 						} else {
 							id = s.replace(".gpml", "");
 						}
 					}
 					
+					System.out.println(folder.getAbsolutePath() + "\t" + folder.exists());
+					 
 					Pathway p = new Pathway();
 					p.readFromXml(url.openStream(), false);
 					String rev = p.getMappInfo().getVersion().split("_")[1];
 					printPathwayInfo(id, rev, p.getMappInfo().getAuthor(), date, p);
 					printNodeList(id, p);
 					printRefList(id, p);
-					makeCommit(ghRepo, localDir, "wikipathways", "meta data files");
-					localDir.deleteOnExit();;
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -110,10 +91,13 @@ public class MetaDataExtractor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			System.out.println("Wrong number of attributes");
 		}
 	}
 	
 	private static void printPathwayInfo(String pId, String revision, String authors, String date, Pathway pwy) throws IOException {
+		System.out.println("print pathway info");
 		JSONObject jsonObject = new JSONObject();
 
 		List<String> a = new ArrayList<String>();
@@ -136,7 +120,8 @@ public class MetaDataExtractor {
 
 		jsonObject.put("description", desc.replace("\n", " "));
 
-		jsonObject.put("last-edited", date.substring(0, 8));
+		System.out.println(date);
+		jsonObject.put("last-edited", date.substring(0, 10));
 
 		List<String> ont = new ArrayList<>();
 		for (OntologyTag t : pwy.getOntologyTags()) {
@@ -195,34 +180,5 @@ public class MetaDataExtractor {
 			}
 		} 
 		w.close();
-	}
-	
-	private static void makeCommit(GHRepository repo, File folder, String author, String message) throws IOException {
-		GHRef ref = repo.getRef("heads/main");
-		GHCommit latestCommit = repo.getCommit(ref.getObject().getSha());
-	    GHTreeBuilder treeBuilder = repo.createTree().baseTree(latestCommit.getTree().getSha());
-	    addFilesToTree(treeBuilder, folder, folder);
-	    GHTree tree = treeBuilder.create();
-	    	    
-	    GHCommit commit = repo.createCommit().author(author, "wikipathways@gmail.com", new Date())
-	            .parent(latestCommit.getSHA1())
-	            .tree(tree.getSha())
-	            .message(message)
-	            .create();
-	    ref.updateTo(commit.getSHA1());
-	    
-	    System.out.println("Commit created with on branch main and SHA " + commit.getSHA1() + " and URL " + commit.getHtmlUrl());
-	    commit.getSHA1();
-	}
-	
-	private static void addFilesToTree(GHTreeBuilder treeBuilder, File baseDirectory, File currentDirectory) throws IOException {
-	    for(File file : currentDirectory.listFiles()) {
-	        String relativePath = baseDirectory.toURI().relativize(file.toURI()).getPath();
-	        if(file.isFile()) {
-	        	treeBuilder.add(relativePath, new String(Files.readAllBytes(Paths.get(file.toURI()))), false);
-	        } else {
-	            addFilesToTree(treeBuilder, baseDirectory, file);
-	        }
-	    }
 	}
 }

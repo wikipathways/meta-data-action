@@ -48,12 +48,6 @@
 			<artifactId>json</artifactId>
 			<version>20220320</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.kohsuke</groupId>
-			<artifactId>github-api</artifactId>
-			<version>1.301</version>
-		</dependency>
 	
 		<!-- install local file with following command -->
 		<!-- mvn install:install-file -Dfile=lib/org.wikipathways.webservice.api.lib-3.3.0.jar 
