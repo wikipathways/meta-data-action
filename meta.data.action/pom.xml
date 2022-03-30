@@ -1,10 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.wikipathways</groupId>
-	<artifactId>meta.data.action</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>meta-data-action</artifactId>
+	<version>0.0.1</version>
+	<packaging>jar</packaging>
 
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -12,45 +14,55 @@
 	</properties>
 
 	<build>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-dependency-plugin</artifactId>
-			<configuration>
-				<outputDirectory>lib</outputDirectory>
-				<excludeTransitive>false</excludeTransitive>
-				<stripVersion>false</stripVersion>
-			</configuration>
-			<executions>
-				<execution>
-					<id>copy-dependencies</id>
-					<phase>package</phase>
-					<goals>
-						<goal>copy-dependencies</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>
+										meta.data.action.MetaDataExtractor
+									</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
-	
-	<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-jar-plugin</artifactId>
-		<version>2.4</version>
-		<configuration>
-			<archive>
-				<manifest>
-					<addClasspath>true</addClasspath>
-					<classpathPrefix>lib/</classpathPrefix>
-				</manifest>
-			</archive>
-		</configuration>
-	</plugin>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20220320</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.kohsuke</groupId>
 			<artifactId>github-api</artifactId>
 			<version>1.301</version>
+		</dependency>
+	
+		<!-- install local file with following command -->
+		<!-- mvn install:install-file -Dfile=lib/org.wikipathways.webservice.api.lib-3.3.0.jar 
+			-DgroupId=org.wikipathways -DartifactId=webservice.api.lib -Dversion=3.3.0 
+			-Dpackaging=jar -->
+		<dependency>
+			<groupId>org.wikipathways</groupId>
+			<artifactId>webservice.api.lib</artifactId>
+			<version>3.3.0</version>
 		</dependency>
 	</dependencies>
 
