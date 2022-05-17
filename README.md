@@ -5,4 +5,4 @@ Java 8 needed
 
 Todo:
 - [x] Fix pom.xml file to build jar file (with integrated dependencies)
-- [ ] create github action to trigger execution whenever GPML file changes
+- [x] create github action to trigger execution whenever GPML file changes

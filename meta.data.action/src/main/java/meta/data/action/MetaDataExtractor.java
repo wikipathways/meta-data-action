@@ -156,6 +156,7 @@ public class MetaDataExtractor {
 				for(Comment c : e.getComments()) {
 					comment = comment + c.getComment().replace("\n", " ") + "</br>"; 
 				}
+				comment = comment.replace("\"", "\'"); //for jekyll TSV parsing
 				if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
 				w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getDataNodeType() + "\t" + ((e.getElementID() != null) ? e.getElementID() : "") + "\t" + ((e.getDataSource() != null) ? e.getDataSource().getFullName() : "") + "\t" +  comment + "\n");			
 			}
