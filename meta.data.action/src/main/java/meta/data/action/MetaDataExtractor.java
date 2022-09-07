@@ -165,7 +165,7 @@ public class MetaDataExtractor {
 	private static void printNodeList(String pId, Pathway pwy) throws IOException, ClassNotFoundException, IDMapperException {
 		File file = new File(folder, pId + "-datanodes.tsv");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		w.write("Label\tType\tIdentifier\tDatabase\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\n");
+		w.write("Label\tType\tIdentifier\tDatabase\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\tUrl\n");
 		ArrayList<String> elementTypes = new ArrayList<String>(Arrays.asList("Metabolite", "GeneProduct", "Protein"));
 		
 		// create idmapper stack using gdb.config file
@@ -185,12 +185,14 @@ public class MetaDataExtractor {
 					comment = comment.replace("\"", "\'"); //for jekyll TSV parsing
 					String idMappings = "";	//idMappings string which will be used in the final datanodes.tsv table
 					String sourceDb = "";
+					String url = "";
 					sourceDb = e.getXref().toString().replaceAll("[\\[\\](){}]","");
 					// call helper function which takes the original identifier (e.getElementID() and performs identifier mappings
 					// it will append the list of IDs to the idMappings string and return the string with the filled out blanks for each database (some will remain blank)
 					idMappings = getIDMappingsString(e, pId, pwy, idmpStack);
+					url = e.getXref().getKnownUrl().toString();
 					if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getDataNodeType() + "\t" + ((e.getElementID() != null) ? e.getElementID() : "") + "\t" + ((e.getDataSource() != null) ? sourceDb : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
+					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getDataNodeType() + "\t" + ((e.getElementID() != null) ? e.getElementID() : "") + "\t" + ((e.getDataSource() != null) ? sourceDb : "") + "\t" +  comment  + "\t" + idMappings + "\t"  + url + "\n");			
 				}
 			}
 		}
