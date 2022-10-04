@@ -33,13 +33,14 @@ import org.bridgedb.bio.DataSourceTxt;
 import org.bridgedb.bio.Organism;
 import org.bridgedb.rdb.GdbProvider;
 import org.json.JSONObject;
-import org.pathvisio.core.biopax.PublicationXref;
-import org.pathvisio.core.model.ConverterException;
-import org.pathvisio.core.model.ObjectType;
-import org.pathvisio.core.model.OntologyTag;
-import org.pathvisio.core.model.Pathway;
-import org.pathvisio.core.model.PathwayElement;
-import org.pathvisio.core.model.PathwayElement.Comment;
+import org.pathvisio.libgpml.io.ConverterException;
+import org.pathvisio.libgpml.model.Annotation;
+import org.pathvisio.libgpml.model.Citation;
+import org.pathvisio.libgpml.model.DataNode;
+import org.pathvisio.libgpml.model.Pathway.Author;
+import org.pathvisio.libgpml.model.PathwayElement.AnnotationRef;
+import org.pathvisio.libgpml.model.PathwayElement.Comment;
+import org.pathvisio.libgpml.model.PathwayModel;
 
 /**
  * 
@@ -91,12 +92,10 @@ public class MetaDataExtractor {
 						}
 					}
 					
-					System.out.println(folder.getAbsolutePath() + "\t" + folder.exists());
-					
-					Pathway p = new Pathway();
+					PathwayModel p = new PathwayModel();
 					p.readFromXml(url.openStream(), false);
-					String rev = p.getMappInfo().getVersion().split("_")[1];
-					printPathwayInfo(id, rev, p.getMappInfo().getAuthor(), date, p);
+					String rev = p.getPathway().getVersion().split("_")[1];
+					printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
 					printNodeList(id, p);
 					printRefList(id, p);
 				}
@@ -112,46 +111,37 @@ public class MetaDataExtractor {
 		}
 	}
 	
-	private static void printPathwayInfo(String pId, String revision, String authors, String date, Pathway pwy) throws IOException {
+	private static void printPathwayInfo(String pId, String revision, List<Author> authors, String date, PathwayModel p) throws IOException {
 		System.out.println("print pathway info");
 		JSONObject jsonObject = new JSONObject();
-
+		
 		List<String> a = new ArrayList<String>();
-		authors = authors.replace("[", "").replace("]", "");
-		String[] list = authors.split(", ");
-		List<String> aList = new ArrayList<>();
-		for (String s : list) {
-			aList.add(s);
+		for(Author auth : authors) {
+			a.add(auth.getUsername());
 		}
-		jsonObject.put("authors", aList);
+		jsonObject.put("authors", a);
 
 		String desc = "";
-		for (Comment c : pwy.getMappInfo().getComments()) {
-			if (c.getSource() != null) {
-				if (c.getSource().equals("WikiPathways-description")) {
-					desc = c.getComment();
-				}
-			}
-		}
+		desc = p.getPathway().getDescription();
 
 		jsonObject.put("description", desc.replace("\n", " "));
 
-		System.out.println(date);
 		jsonObject.put("last-edited", date.substring(0, 10));
 
 		List<String> ont = new ArrayList<>();
-		for (OntologyTag t : pwy.getOntologyTags()) {
-			ont.add(t.getId());
+		
+		for (AnnotationRef ann : p.getPathway().getAnnotationRefs()) {
+			ont.add(ann.getAnnotation().getXref().getId());
 		}
 		jsonObject.put("ontology-ids", ont);
 
 		List<String> org = new ArrayList<>();
-		org.add(pwy.getMappInfo().getOrganism());
+		org.add(p.getPathway().getOrganism());
 		jsonObject.put("organisms", org);
 
 		jsonObject.put("revision", revision);
 
-		jsonObject.put("title", pwy.getMappInfo().getMapInfoName());
+		jsonObject.put("title", p.getPathway().getTitle());
 
 		jsonObject.put("wpid", pId);
 
@@ -162,7 +152,7 @@ public class MetaDataExtractor {
 
 	}
 	
-	private static void printNodeList(String pId, Pathway pwy) throws IOException, ClassNotFoundException, IDMapperException {
+	private static void printNodeList(String pId, PathwayModel p) throws IOException, ClassNotFoundException, IDMapperException {
 		File file = new File(folder, pId + "-datanodes.tsv");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
 		w.write("Label\tType\tIdentifier\tDatabase\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\n");
@@ -176,11 +166,11 @@ public class MetaDataExtractor {
 		IDMapperStack idmpStack = idmp.getStack(org);
 		
 		for (String type : elementTypes){
-			for(PathwayElement e : pwy.getDataObjects()) {
-				if(e.getObjectType().equals(ObjectType.DATANODE) && e.getDataNodeType().equals(type)){
+			for(DataNode e : p.getDataNodes()) {
+				if(e.getType().toString().equals(type)){
 					String comment = "";
 					for(Comment c : e.getComments()) {
-						comment = comment + c.getComment().replace("\n", " ") + "</br>"; 
+						comment = comment + c.getCommentText().replace("\n", " ") + "</br>"; 
 					}
 					comment = comment.replace("\"", "\'"); //for jekyll TSV parsing
 					String idMappings = "";	//idMappings string which will be used in the final datanodes.tsv table
@@ -188,18 +178,19 @@ public class MetaDataExtractor {
 					sourceDb = e.getXref().toString().replaceAll("[\\[\\](){}]","");
 					// call helper function which takes the original identifier (e.getElementID() and performs identifier mappings
 					// it will append the list of IDs to the idMappings string and return the string with the filled out blanks for each database (some will remain blank)
-					idMappings = getIDMappingsString(e, pId, pwy, idmpStack);
+					String bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
+					idMappings = getIDMappingsString(e, pId, p, idmpStack);
 					if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getDataNodeType() + "\t" + ((e.getElementID() != null) ? e.getElementID() : "") + "\t" + ((e.getDataSource() != null) ? sourceDb : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
+					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" + ((e.getXref().getDataSource() != null) ? sourceDb : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
 				}
 			}
 		}
 		w.close();
 	}
 	
-	private static String getIDMappingsString(PathwayElement e, String pId, Pathway pwy, IDMapperStack idmpStack) throws ClassNotFoundException, IOException, IDMapperException {
+	private static String getIDMappingsString(DataNode e, String pId, PathwayModel p, IDMapperStack idmpStack) throws ClassNotFoundException, IOException, IDMapperException {
 		// perform ID Mapping for Ensembl, NCBI gene, HGNC, UniProt, Wikidata, ChEBI, InChI
-		DataSourceTxt.init();
+		//DataSourceTxt.init();
 		ArrayList<String> dataSourceList = new ArrayList<String>(Arrays.asList("En", "L", "H", "S", "Wd", "Ce","Ik"));
 		String result = "";		
 		
@@ -208,16 +199,18 @@ public class MetaDataExtractor {
 			Set<Xref> stackResult = idmpStack.mapID(e.getXref(), DataSource.getExistingBySystemCode(sysCode));
 			// Check if more than one Xref was returned. If yes, then append them using semicolon.
 			String stackStr = "";
-			if (stackResult.size() > 1) {
-				for (Xref ref : stackResult) {
-					stackStr = stackStr + ref.toString() + ";";
-					//stackStr = stackStr + ref.getBioregistryIdentifier().toString() + ":" + ref.getId().toString() + ";";
+			for (Xref ref : stackResult) {
+				String bioregID = ref.getBioregistryIdentifier();
+				bioregID = bioregID.replaceAll("chebi:CHEBI:", "chebi:");
+				if (stackResult.size() > 1) {
+					stackStr = stackStr + bioregID + ";";
 				}
-				stackStr = stackStr.substring(0, stackStr.length() - 2).replaceAll("[\\[\\](){}]","");
+				else {
+					stackStr = bioregID;
+				}
 			}
-			else {
-				stackStr = stackResult.toString();
-				stackStr = stackStr.substring(0, stackStr.length() - 1).replaceAll("[\\[\\](){}]","");
+			if (stackStr.endsWith(";")){
+				stackStr = stackStr.substring(0, stackStr.length()-1);
 			}
 			if (sysCode == "En") {
 				result = stackStr;
@@ -226,24 +219,19 @@ public class MetaDataExtractor {
 				result = result+ "\t" + stackStr;
 			}
 		}
-		System.out.println(result);
 		return result;
 	}
 
-	private static void printRefList(String pId, Pathway pwy) throws IOException {
+	private static void printRefList(String pId, PathwayModel p) throws IOException {
 		File file = new File(folder, pId + "-refs.tsv");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
 		w.write("ID\tDatabase\n");
-		Set<String> refs = new HashSet<String>();
+		Set<Xref> refs = new HashSet<Xref>();
 
-		for(PathwayElement e : pwy.getDataObjects()) {
-			if(!e.getObjectType().equals(ObjectType.BIOPAX)) {
-				for(PublicationXref px : e.getBiopaxReferenceManager().getPublicationXRefs()) {
-					if(!refs.contains(px.getPubmedId())) {
-						w.write(px.getPubmedId() + "\tPubmed\n");
-						refs.add(px.getPubmedId());
-					}
-				}
+		for(Citation e : p.getCitations()) {
+			if(!refs.contains(e.getXref())) {
+				w.write(e.getXref().getId()+ "\t" + e.getXref().getDataSource().getFullName() + "\n");
+				refs.add(e.getXref());
 			}
 		} 
 		w.close();
