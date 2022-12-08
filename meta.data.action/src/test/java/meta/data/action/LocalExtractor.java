@@ -82,9 +82,9 @@ public class LocalExtractor {
 
 		List<String> ont = new ArrayList<>();
 		for (AnnotationRef ann : pwy.getPathway().getAnnotationRefs()) {
-			//ann.getAnnotation().getXref();
-			ont.add(ann.getAnnotation().getXref().getId());
+			ont.add(ann.getAnnotation().getXref().getBioregistryIdentifier());
 		}
+		
 		jsonObject.put("ontology-ids", ont);
 
 		List<String> org = new ArrayList<>();

@@ -16,7 +16,25 @@ Organism name	Organism_Derby_File.bridge
   
 Example gdb.config file:  
 Mus musculus	Mm_Derby_Ensembl_103.bridge  
-\*	metabolites_20210109.bridge  
+\*	metabolites_20210109.bridge 
+
+# Using the MetaDataExtractor locally:
+
+Download the latest jar file from: 
+
+In your command line, navigate to the folder where you saved the jar file. 
+
+Then run the following command, providing the 5 arguments described above: 
+
+```bash
+java -jar meta-data-action-1.0.3-jar-with-dependencies.jar wikipathways/wikipathways-database pathways/WP1/WP1.gpml 2022-10-04 gdb.config Mus musculus
+```
+
+The above command uses as an example WP1, an example date (2022-10-04), and an example organism name (Mus musculus). 
+
+The gdb.config file needs to be saved in the same directory as the meta-data-action jar file.
+
+#Using the MetaDataExtractor through a GitHub Action: 
   
 The MetaDataExtractor main class is called by on_gpml_change.yml (https://github.com/wikipathways/wikipathways-database/blob/main/.github/workflows/on_gpml_change.yml)  
   

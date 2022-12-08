@@ -131,7 +131,7 @@ public class MetaDataExtractor {
 		List<String> ont = new ArrayList<>();
 		
 		for (AnnotationRef ann : p.getPathway().getAnnotationRefs()) {
-			ont.add(ann.getAnnotation().getXref().getId());
+			ont.add(ann.getAnnotation().getXref().getBioregistryIdentifier().toUpperCase());
 		}
 		jsonObject.put("ontology-ids", ont);
 
