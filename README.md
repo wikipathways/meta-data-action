@@ -20,7 +20,7 @@ Mus musculus	Mm_Derby_Ensembl_103.bridge
 
 # Using the MetaDataExtractor locally:
 
-Download the latest jar file from: 
+Download the latest jar file from: https://github.com/hbasaric/meta-data-action/releases/download/v1.0.0/meta-data-action-1.0.3-jar-with-dependencies.jar
 
 In your command line, navigate to the folder where you saved the jar file. 
 
