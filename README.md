@@ -34,7 +34,7 @@ The above command uses as an example WP1, an example date (2022-10-04), and an e
 
 The gdb.config file needs to be saved in the same directory as the meta-data-action jar file.
 
-#Using the MetaDataExtractor through a GitHub Action: 
+# Using the MetaDataExtractor through a GitHub Action: 
   
 The MetaDataExtractor main class is called by on_gpml_change.yml (https://github.com/wikipathways/wikipathways-database/blob/main/.github/workflows/on_gpml_change.yml)  
   
