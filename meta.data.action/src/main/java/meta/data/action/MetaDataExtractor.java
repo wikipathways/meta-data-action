@@ -16,7 +16,9 @@ package meta.data.action;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -80,7 +82,7 @@ public class MetaDataExtractor {
 			
 			try {
 				if(file.endsWith(".gpml")) {
-					URL url = new URL("https://raw.githubusercontent.com/" + repo + "/main/" + file);
+					//extract WPID and verify folder path
 					String [] buffer = file.split("/");
 					String id = "";
 					for(String s : buffer) {
@@ -91,9 +93,17 @@ public class MetaDataExtractor {
 							id = s.replace(".gpml", "");
 						}
 					}
-					
+					System.out.println(folder.getAbsolutePath() + "\t" + folder.exists());
 					PathwayModel p = new PathwayModel();
-					p.readFromXml(url.openStream(), false);
+					//Using local GPML files (file = relative file path)
+					if(repo.equalsIgnoreCase("local")){
+						InputStream fileIS = new FileInputStream(new File(file));
+						p.readFromXml(fileIS, false);
+					} else {
+					//Using repo GPML files
+						URL url = new URL("https://raw.githubusercontent.com/" + repo + "/main/" + file);
+						p.readFromXml(url.openStream(), false);
+					}
 					String rev = p.getPathway().getVersion().split("_")[1];
 					printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
 					printNodeList(id, p);
