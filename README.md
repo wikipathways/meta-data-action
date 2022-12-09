@@ -18,9 +18,9 @@ Example gdb.config file:
 Mus musculus	Mm_Derby_Ensembl_103.bridge  
 \*	metabolites_20210109.bridge 
 
-# Using the MetaDataExtractor locally:
+### Using the MetaDataExtractor locally:
 
-Download the latest jar file from: https://github.com/hbasaric/meta-data-action/releases/download/v1.0.0/meta-data-action-1.0.3-jar-with-dependencies.jar
+Download the latest jar file from: https://github.com/wikipathways/meta-data-action/releases/download/1.0.0/meta-data-action-1.0.3-jar-with-dependencies.jar
 
 In your command line, navigate to the folder where you saved the jar file. 
 
@@ -34,7 +34,7 @@ The above command uses as an example WP1, an example date (2022-10-04), and an e
 
 The gdb.config file needs to be saved in the same directory as the meta-data-action jar file.
 
-# Using the MetaDataExtractor through a GitHub Action: 
+### Using the MetaDataExtractor through a GitHub Action: 
   
 The MetaDataExtractor main class is called by on_gpml_change.yml (https://github.com/wikipathways/wikipathways-database/blob/main/.github/workflows/on_gpml_change.yml)  
   
