@@ -68,16 +68,6 @@
 			<artifactId>org.pathvisio.libgpml</artifactId>
 			<version>4.0.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.bridgedb</groupId>
-			<artifactId>org.bridgedb</artifactId>
-			<version>3.0.17</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bridgedb</groupId>
-			<artifactId>org.bridgedb.rdb</artifactId>
-			<version>3.0.17</version>
-		</dependency>
 	</dependencies>
 
 
