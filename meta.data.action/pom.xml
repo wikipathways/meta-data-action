@@ -67,6 +67,12 @@
 			<groupId>org.pathvisio</groupId>
 			<artifactId>org.pathvisio.libgpml</artifactId>
 			<version>4.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
