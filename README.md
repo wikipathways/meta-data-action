@@ -10,7 +10,7 @@ arg3 = commitDate (change in GPML)
 arg4 = name of gdb config file  
 arg5 = name of organism  
   
-The gdb.config file is of the form:  
+The gdb.config file is of the form:
 Organism name	Organism_Derby_File.bridge  
 \*	Metabolites_Derby_File.bridge  
   
@@ -27,7 +27,8 @@ In your command line, navigate to the folder where you saved the jar file.
 Then run the following command, providing the 5 arguments described above: 
 
 ```bash
-java -jar meta-data-action-1.0.3-jar-with-dependencies.jar wikipathways/wikipathways-database pathways/WP1/WP1.gpml 2022-10-04 gdb.config Mus musculus
+mkdir -o pathways/WP1
+java -jar meta-data-action-1.0.3-jar-with-dependencies.jar wikipathways/wikipathways-database pathways/WP1/WP1.gpml 2022-10-04 gdb.config "Mus musculus"
 ```
 
 The above command uses as an example WP1, an example date (2022-10-04), and an example organism name (Mus musculus). 
