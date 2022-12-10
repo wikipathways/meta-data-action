@@ -35,6 +35,8 @@ The above command uses as an example WP1, an example date (2022-10-04), and an e
 
 The gdb.config file needs to be saved in the same directory as the meta-data-action jar file.
 
+*Advanced: If you want to run with local GPML files, then set the repo arg to "local". Adapt and execute `scripts/local-run/on-gpml-change_local.sh` for bulk, offline use cases.*
+
 ### Using the MetaDataExtractor through a GitHub Action: 
   
 The MetaDataExtractor main class is called by on_gpml_change.yml (https://github.com/wikipathways/wikipathways-database/blob/main/.github/workflows/on_gpml_change.yml)  
