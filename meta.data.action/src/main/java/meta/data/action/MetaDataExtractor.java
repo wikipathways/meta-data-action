@@ -249,7 +249,11 @@ public class MetaDataExtractor {
 
 		for(Citation e : p.getCitations()) {
 			if(!refs.contains(e.getXref())) {
-				w.write(e.getXref().getId()+ "\t" + e.getXref().getDataSource().getFullName() + "\n");
+				String fullName = e.getXref().getDataSource().getFullName();
+				if (fullName.equals("PubMed")){
+					fullName = "Pubmed";
+				}
+				w.write(e.getXref().getId()+ "\t" + fullName + "\n");
 				refs.add(e.getXref());
 			}
 		} 
