@@ -133,8 +133,10 @@ public class MetaDataExtractor {
 
 		String desc = "";
 		desc = p.getPathway().getDescription();
-
-		jsonObject.put("description", desc.replace("\n", " "));
+		
+		if (null != desc) {
+			jsonObject.put("description", desc.replace("\n", " "));
+		}
 
 		jsonObject.put("last-edited", date.substring(0, 10));
 
@@ -177,7 +179,7 @@ public class MetaDataExtractor {
 		
 		for (String type : elementTypes){
 			for(DataNode e : p.getDataNodes()) {
-				if(e.getType().toString().equals(type)){
+				if(e.getType().toString().equals(type) && e.getXref() != null){
 					String comment = "";
 					for(Comment c : e.getComments()) {
 						comment = comment + c.getCommentText().replace("\n", " ") + "</br>"; 
