@@ -11,12 +11,16 @@ arg4 = name of gdb config file
 arg5 = name of organism  
   
 The gdb.config file is of the form:
+```
 Organism name	Organism_Derby_File.bridge  
-\*	Metabolites_Derby_File.bridge  
-  
+*	Metabolites_Derby_File.bridge  
+```
+
 Example gdb.config file:  
+```
 Mus musculus	Mm_Derby_Ensembl_103.bridge  
-\*	metabolites_20210109.bridge 
+*	metabolites_20210109.bridge 
+```
 
 ### Using the MetaDataExtractor locally:
 
