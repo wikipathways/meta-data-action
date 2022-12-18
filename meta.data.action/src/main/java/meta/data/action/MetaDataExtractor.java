@@ -105,6 +105,11 @@ public class MetaDataExtractor {
 						p.readFromXml(url.openStream(), false);
 					}
 					String rev = p.getPathway().getVersion().split("_")[1];
+					String[] auth = p.getPathway().getDynamicProperties().get("pathway_author_gpml2013a").split("[,\\]\\[]");
+					
+					for (String a : auth) {
+						p.getPathway().addAuthor(a);
+					}
 					printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
 					printNodeList(id, p);
 					printRefList(id, p);
@@ -124,11 +129,12 @@ public class MetaDataExtractor {
 	private static void printPathwayInfo(String pId, String revision, List<Author> authors, String date, PathwayModel p) throws IOException {
 		System.out.println("print pathway info");
 		JSONObject jsonObject = new JSONObject();
-		
 		List<String> a = new ArrayList<String>();
+		
 		for(Author auth : authors) {
-			a.add(auth.getUsername());
+			a.add(auth.getName());
 		}
+		
 		jsonObject.put("authors", a);
 
 		String desc = "";
@@ -167,7 +173,7 @@ public class MetaDataExtractor {
 	private static void printNodeList(String pId, PathwayModel p) throws IOException, ClassNotFoundException, IDMapperException {
 		File file = new File(folder, pId + "-datanodes.tsv");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		w.write("Label\tType\tIdentifier\tDatabase\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\n");
+		w.write("Label\tType\tIdentifier\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\n");
 		ArrayList<String> elementTypes = new ArrayList<String>(Arrays.asList("Metabolite", "GeneProduct", "Protein"));
 		
 		// create idmapper stack using gdb.config file
@@ -196,7 +202,7 @@ public class MetaDataExtractor {
 					}
 					idMappings = getIDMappingsString(e, pId, p, idmpStack);
 					if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" + ((e.getXref().getDataSource() != null) ? sourceDb : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
+					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
 				}
 			}
 		}
