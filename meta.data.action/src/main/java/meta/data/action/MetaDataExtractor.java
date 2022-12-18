@@ -135,6 +135,9 @@ public class MetaDataExtractor {
 			a.add(auth.getName());
 		}
 		
+		//remove empty strings
+		a.removeAll(Arrays.asList("", null));
+		
 		jsonObject.put("authors", a);
 
 		String desc = "";
