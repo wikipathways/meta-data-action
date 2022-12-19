@@ -105,7 +105,7 @@ public class MetaDataExtractor {
 						p.readFromXml(url.openStream(), false);
 					}
 					String rev = p.getPathway().getVersion().split("_")[1];
-					String[] auth = p.getPathway().getDynamicProperties().get("pathway_author_gpml2013a").split("[,\\]\\[]");
+					String[] auth = p.getPathway().getDynamicProperties().get("pathway_author_gpml2013a").replaceAll("^\\s*\\[|\\]\\s*$", "").split("\\s*,\\s*");
 					
 					for (String a : auth) {
 						p.getPathway().addAuthor(a);
@@ -134,9 +134,6 @@ public class MetaDataExtractor {
 		for(Author auth : authors) {
 			a.add(auth.getName());
 		}
-		
-		//remove empty strings
-		a.removeAll(Arrays.asList("", null));
 		
 		jsonObject.put("authors", a);
 
