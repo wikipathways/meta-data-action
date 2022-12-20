@@ -110,9 +110,9 @@ public class MetaDataExtractor {
 					for (String a : auth) {
 						p.getPathway().addAuthor(a);
 					}
-					//printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
+					printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
 					printNodeList(id, p);
-					//printRefList(id, p);
+					printRefList(id, p);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
