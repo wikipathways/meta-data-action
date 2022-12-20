@@ -110,9 +110,9 @@ public class MetaDataExtractor {
 					for (String a : auth) {
 						p.getPathway().addAuthor(a);
 					}
-					printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
+					//printPathwayInfo(id, rev, p.getPathway().getAuthors(), date, p);
 					printNodeList(id, p);
-					printRefList(id, p);
+					//printRefList(id, p);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -195,7 +195,9 @@ public class MetaDataExtractor {
 						sourceDb = e.getXref().toString().replaceAll("[\\[\\](){}]","");
 						// call helper function which takes the original identifier (e.getElementID() and performs identifier mappings
 						// it will append the list of IDs to the idMappings string and return the string with the filled out blanks for each database (some will remain blank)
-						String bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
+						String bioregID = null;
+						if (null != e.getXref().getBioregistryIdentifier())
+							bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
 						idMappings = getIDMappingsString(e, pId, p, idmpStack);
 						if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
 						w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
