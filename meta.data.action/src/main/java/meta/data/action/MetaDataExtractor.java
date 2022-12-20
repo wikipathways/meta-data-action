@@ -191,13 +191,15 @@ public class MetaDataExtractor {
 					comment = comment.replace("\"", "\'"); //for jekyll TSV parsing
 					String idMappings = "";	//idMappings string which will be used in the final datanodes.tsv table
 					String sourceDb = "";
-					sourceDb = e.getXref().toString().replaceAll("[\\[\\](){}]","");
-					// call helper function which takes the original identifier (e.getElementID() and performs identifier mappings
-					// it will append the list of IDs to the idMappings string and return the string with the filled out blanks for each database (some will remain blank)
-					String bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
-					idMappings = getIDMappingsString(e, pId, p, idmpStack);
-					if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-					w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
+					if(null != e.getXref()){
+						sourceDb = e.getXref().toString().replaceAll("[\\[\\](){}]","");
+						// call helper function which takes the original identifier (e.getElementID() and performs identifier mappings
+						// it will append the list of IDs to the idMappings string and return the string with the filled out blanks for each database (some will remain blank)
+						String bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
+						idMappings = getIDMappingsString(e, pId, p, idmpStack);
+						if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
+						w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
+					}
 				}
 			}
 		}
