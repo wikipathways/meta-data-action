@@ -139,6 +139,9 @@ public class MetaDataExtractor {
 
 		String desc = "";
 		desc = p.getPathway().getDescription();
+		if (null == desc){
+			desc = "";
+		}
 
 		jsonObject.put("description", desc.replace("\n", " "));
 
