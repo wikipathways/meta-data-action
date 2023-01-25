@@ -253,7 +253,13 @@ public class MetaDataExtractor {
 
 		for(Citation e : p.getCitations()) {
 			if(!refs.contains(e.getXref())) {
-				w.write(e.getXref().getId()+ "\t" + e.getXref().getDataSource().getFullName() + "\n");
+				String xrefID = "NA";
+				String xrefDS = "NA";
+				if (null != e.getXref()){
+					xrefID = e.getXref().getId();
+					xrefDS = e.getXref().getDataSource().getFullName();
+				}
+				w.write(xrefID + "\t" + xrefDS + "\n");
 				refs.add(e.getXref());
 			}
 		} 
