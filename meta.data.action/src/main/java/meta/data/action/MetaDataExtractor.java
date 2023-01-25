@@ -143,8 +143,9 @@ public class MetaDataExtractor {
 			desc = "";
 		}
 
-		jsonObject.put("description", desc.replace("\n", " "));
-
+		if (null != desc)
+			jsonObject.put("description", desc.replace("\n", " "));
+		
 		jsonObject.put("last-edited", date.substring(0, 10));
 
 		List<String> ont = new ArrayList<>();
@@ -186,16 +187,14 @@ public class MetaDataExtractor {
 		
 		for (String type : elementTypes){
 			for(DataNode e : p.getDataNodes()) {
-				if(e.getType().toString().equals(type)){
+				if(e.getType().toString().equals(type) && e.getXref() != null){
 					String comment = "";
 					for(Comment c : e.getComments()) {
 						comment = comment + c.getCommentText().replace("\n", " ") + "</br>"; 
 					}
 					comment = comment.replace("\"", "\'"); //for jekyll TSV parsing
 					String idMappings = "";	//idMappings string which will be used in the final datanodes.tsv table
-					String sourceDb = "";
 					if(null != e.getXref()){
-						sourceDb = e.getXref().toString().replaceAll("[\\[\\](){}]","");
 						// call helper function which takes the original identifier (e.getElementID() and performs identifier mappings
 						// it will append the list of IDs to the idMappings string and return the string with the filled out blanks for each database (some will remain blank)
 						String bioregID = null;
@@ -224,23 +223,21 @@ public class MetaDataExtractor {
 			String stackStr = "";
 			for (Xref ref : stackResult) {
 				String bioregID = ref.getBioregistryIdentifier();
-				bioregID = bioregID.replaceAll("chebi:CHEBI:", "chebi:");
-				if (stackResult.size() > 1) {
+				if (null != bioregID)
+					bioregID = bioregID.replaceAll("chebi:CHEBI:", "chebi:");
+				else
+					bioregID = "";
+				if (stackResult.size() > 1)
 					stackStr = stackStr + bioregID + ";";
-				}
-				else {
+				else
 					stackStr = bioregID;
-				}
 			}
-			if (stackStr.endsWith(";")){
+			if (stackStr.endsWith(";"))
 				stackStr = stackStr.substring(0, stackStr.length()-1);
-			}
-			if (sysCode == "En") {
+			if (sysCode == "En") 
 				result = stackStr;
-			}
-			else {
+			else 
 				result = result+ "\t" + stackStr;
-			}
 		}
 		return result;
 	}
@@ -254,12 +251,14 @@ public class MetaDataExtractor {
 		for(Citation e : p.getCitations()) {
 			if(!refs.contains(e.getXref())) {
 				String xrefID = "NA";
-				String xrefDS = "NA";
+				String xrefFullName = "NA";
 				if (null != e.getXref()){
 					xrefID = e.getXref().getId();
-					xrefDS = e.getXref().getDataSource().getFullName();
+					xrefFullName = e.getXref().getDataSource().getFullName();
+					if (xrefFullName.equals("PubMed"))
+						xrefFullName = "Pubmed";
 				}
-				w.write(xrefID + "\t" + xrefDS + "\n");
+				w.write(xrefID + "\t" + xrefFullName + "\n");
 				refs.add(e.getXref());
 			}
 		} 
