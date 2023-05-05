@@ -63,6 +63,4 @@ Ensures that the required derby databases are downloaded.
 First checks if the files already exist in the cache, then downloads required files.  
   
 Once configGenerator.sh and installDependencies.sh are run, the MetaDataExtractor is able to generate info.json and datanodes.tsv  
-  
-Todo:  
-- [x] Fix pom.xml file to build jar file (with integrated dependencies)
+
