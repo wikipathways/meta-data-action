@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.wikipathways</groupId>
 	<artifactId>meta-data-action</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -66,7 +66,7 @@
 		<dependency>
 			<groupId>org.pathvisio</groupId>
 			<artifactId>org.pathvisio.libgpml</artifactId>
-			<version>4.0.2</version>
+			<version>4.0.3</version>
 			<exclusions>
 				<exclusion>
 					<groupId>mysql</groupId>
