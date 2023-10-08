@@ -202,7 +202,7 @@ public class MetaDataExtractor {
 							bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
 						idMappings = getIDMappingsString(e, pId, p, idmpStack);
 						if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-						w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t" +  comment  + "\t" + idMappings + "\n");			
+						w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n");
 					}
 				}
 			}
