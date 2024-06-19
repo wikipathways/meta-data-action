@@ -218,7 +218,9 @@ public class MetaDataExtractor {
 		
 		// For each data source in the header, mapID and append the result to the string.
 		for (String sysCode : dataSourceList) {
-			Set<Xref> stackResult = idmpStack.mapID(e.getXref(), DataSource.getExistingBySystemCode(sysCode));
+			Set<Xref> stackResult = cleaner(
+				idmpStack.mapID(e.getXref(), DataSource.getExistingBySystemCode(sysCode))
+			);
 			// Check if more than one Xref was returned. If yes, then append them using semicolon.
 			String stackStr = "";
 			for (Xref ref : stackResult) {
@@ -240,6 +242,16 @@ public class MetaDataExtractor {
 				result = result+ "\t" + stackStr;
 		}
 		return result;
+	}
+
+	private static Set<Xref> cleaner(Set<Xref> stackResult) {
+		Set<Xref> cleaner = new HashSet<>();
+		for (Xref ref : stackResult) {
+			String id = ref.getId();
+			if (id.startsWith("CHEBI:")) id = id.replace("CHEBI:", "");
+			cleaner.add(new Xref(id, ref.getDataSource()));
+		}
+		return cleaner;
 	}
 
 	private static void printRefList(String pId, PathwayModel p) throws IOException {
