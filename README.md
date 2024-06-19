@@ -31,7 +31,7 @@ In your command line, navigate to the folder where you saved the jar file.
 Then run the following command, providing the 5 arguments described above: 
 
 ```bash
-mkdir -o pathways/WP1
+mkdir -p pathways/WP1
 java -jar meta-data-action-1.0.3-jar-with-dependencies.jar wikipathways/wikipathways-database pathways/WP1/WP1.gpml 2022-10-04 gdb.config "Mus musculus"
 ```
 
