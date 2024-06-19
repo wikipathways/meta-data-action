@@ -213,7 +213,7 @@ public class MetaDataExtractor {
 	private static String getIDMappingsString(DataNode e, String pId, PathwayModel p, IDMapperStack idmpStack) throws ClassNotFoundException, IOException, IDMapperException {
 		// perform ID Mapping for Ensembl, NCBI gene, HGNC, UniProt, Wikidata, ChEBI, InChI
 		//DataSourceTxt.init();
-		ArrayList<String> dataSourceList = new ArrayList<String>(Arrays.asList("En", "L", "H", "S", "Wd", "Ce","Ik"));
+		ArrayList<String> dataSourceList = new ArrayList<String>(Arrays.asList("En", "L", "H", "S", "Wd", "Ce","Ik", "Cpc", "Cs", "Ch", "Ck", "Lm"));
 		String result = "";		
 		
 		// For each data source in the header, mapID and append the result to the string.
