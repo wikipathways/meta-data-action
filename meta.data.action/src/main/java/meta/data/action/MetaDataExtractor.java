@@ -204,8 +204,9 @@ public class MetaDataExtractor {
 						idMappings = getIDMappingsString(e, pId, p, idmpStack);
 						if (!writtenStrings.contains(idMappings)) {
 							if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-							w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n");
-							writtenStrings.add(idMappings); // full string, bc the identifiers may be linked to different labels
+							String output = e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n";
+							w.write(output);
+							writtenStrings.add(output);
 						}
 					}
 				}
