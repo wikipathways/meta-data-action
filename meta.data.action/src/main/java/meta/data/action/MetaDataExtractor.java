@@ -249,6 +249,7 @@ public class MetaDataExtractor {
 		for (Xref ref : stackResult) {
 			String id = ref.getId();
 			if (id.startsWith("CHEBI:")) id = id.replace("CHEBI:", "");
+			if (id.startsWith("HMDB") && id.length() == 9) id = id.replace("HMDB", "HMDB00");
 			cleaner.add(new Xref(id, ref.getDataSource()));
 		}
 		return cleaner;
