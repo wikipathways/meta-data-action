@@ -184,7 +184,8 @@ public class MetaDataExtractor {
 		idmp = GdbProvider.fromConfigFile(gdbFile);
 		Organism org = Organism.fromLatinName(organismName);
 		IDMapperStack idmpStack = idmp.getStack(org);
-		
+
+		Set<String> writtenStrings = new HashSet<>();
 		for (String type : elementTypes){
 			for(DataNode e : p.getDataNodes()) {
 				if(e.getType().toString().equals(type) && e.getXref() != null){
@@ -201,8 +202,11 @@ public class MetaDataExtractor {
 						if (null != e.getXref().getBioregistryIdentifier())
 							bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
 						idMappings = getIDMappingsString(e, pId, p, idmpStack);
-						if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-						w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n");
+						if (!writtenStrings.contains(idMappings)) {
+							if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
+							w.write(e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n");
+							writtenStrings.add(idMappings); // full string, bc the identifiers may be linked to different labels
+						}
 					}
 				}
 			}
