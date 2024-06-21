@@ -175,7 +175,7 @@ public class MetaDataExtractor {
 	private static void printNodeList(String pId, PathwayModel p) throws IOException, ClassNotFoundException, IDMapperException {
 		File file = new File(folder, pId + "-datanodes.tsv");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		w.write("Label\tType\tIdentifier\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\tPubChem\tChemSpider\tHMDB\tKEGG\tLipidMapd\n");
+		w.write("Label\tType\tIdentifier\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\tPubChem\tChemSpider\tHMDB\tKEGG\tLipidMaps\n");
 		ArrayList<String> elementTypes = new ArrayList<String>(Arrays.asList("Metabolite", "GeneProduct", "Protein"));
 		
 		// create idmapper stack using gdb.config file
