@@ -23,9 +23,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bridgedb.DataSource;
 import org.bridgedb.IDMapperException;
@@ -126,10 +130,29 @@ public class MetaDataExtractor {
 		}
 	}
 	
+	private static Map<String,String> getLinks(PathwayModel p) {
+		Map<String,String> links = new HashMap<>();
+		for (Comment annot : p.getPathway().getComments()) {
+			String source = annot.getSource();
+			String text = annot.getCommentText();
+			if ("HomologyConvert".equals(source)) {
+				// let's try to find a WikiPathways ID
+		        Pattern pattern = Pattern.compile("WP\\d*");
+		        Matcher matcher = pattern.matcher(text);
+		        if (matcher.find()) {
+                    String wpid = matcher.group();
+					links.put("homologyConvertedFrom", "wikipathways:" + wpid);
+		        }
+			}
+		}
+		return links;
+	}
+
 	private static void printPathwayInfo(String pId, String revision, List<Author> authors, String date, PathwayModel p) throws IOException {
 		System.out.println("print pathway info");
 		JSONObject jsonObject = new JSONObject();
 		List<String> a = new ArrayList<String>();
+		Map<String,String> links = getLinks(p);
 		
 		for(Author auth : authors) {
 			a.add(auth.getName());
@@ -165,6 +188,8 @@ public class MetaDataExtractor {
 
 		jsonObject.put("wpid", pId);
 
+		jsonObject.put("links", links);
+
 		File file = new File(folder, pId + "-info.json");
 		FileWriter writer = new FileWriter(file.getAbsoluteFile());
 		writer.write(jsonObject.toString(4));
@@ -175,8 +200,8 @@ public class MetaDataExtractor {
 	private static void printNodeList(String pId, PathwayModel p) throws IOException, ClassNotFoundException, IDMapperException {
 		File file = new File(folder, pId + "-datanodes.tsv");
 		BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		w.write("Label\tType\tIdentifier\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\tPubChem\tChemSpider\tHMDB\tKEGG\tLipidMaps\n");
-		ArrayList<String> elementTypes = new ArrayList<String>(Arrays.asList("Metabolite", "GeneProduct", "Protein"));
+		w.write("Label\tType\tIdentifier\tComment\tEnsembl\tNCBI gene\tHGNC\tUniProt\tWikidata\tChEBI\tInChI\tPubChem\tChemSpider\tHMDB\tKEGG\tLipidMaps\tWikiPathways\n");
+		ArrayList<String> elementTypes = new ArrayList<String>(Arrays.asList("Metabolite", "GeneProduct", "Protein", "Pathway"));
 		
 		// create idmapper stack using gdb.config file
 		GdbProvider idmp = new GdbProvider();
@@ -203,7 +228,7 @@ public class MetaDataExtractor {
 							bioregID = e.getXref().getBioregistryIdentifier().replaceAll("chebi:CHEBI:", "chebi:");
 						idMappings = getIDMappingsString(e, pId, p, idmpStack);
 						if(!comment.equals("")) comment = comment.substring(0, comment.length()-5);
-						String output = e.getTextLabel().replace("\n", "") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n";
+						String output = e.getTextLabel().replace("\n", " ") + "\t" + e.getType() + "\t" + ((bioregID != null) ? bioregID : "") + "\t\"" +  comment  + "\"\t" + idMappings + "\n";
 						if (!writtenStrings.contains(output)) {
 							w.write(output);
 							writtenStrings.add(output);
@@ -218,7 +243,7 @@ public class MetaDataExtractor {
 	private static String getIDMappingsString(DataNode e, String pId, PathwayModel p, IDMapperStack idmpStack) throws ClassNotFoundException, IOException, IDMapperException {
 		// perform ID Mapping for Ensembl, NCBI gene, HGNC, UniProt, Wikidata, ChEBI, InChI
 		//DataSourceTxt.init();
-		ArrayList<String> dataSourceList = new ArrayList<String>(Arrays.asList("En", "L", "H", "S", "Wd", "Ce","Ik", "Cpc", "Cs", "Ch", "Ck", "Lm"));
+		ArrayList<String> dataSourceList = new ArrayList<String>(Arrays.asList("En", "L", "H", "S", "Wd", "Ce","Ik", "Cpc", "Cs", "Ch", "Ck", "Lm", "Wp"));
 		String result = "";		
 		
 		// For each data source in the header, mapID and append the result to the string.
